@@ -2,17 +2,18 @@ import boto3
 
 from argparse import ArgumentParser
 
-def parse_bucket_name():
+def parse_args():
     parser = ArgumentParser()
     parser.add_argument('-b', '--bucket', type=str, required=True)        
-    parsed_args = parser.parse_args()
-    return parsed_args.bucket
+    return parser.parse_args()
 
-def main():
-    bucket_name = parse_bucket_name()
+def create_bucket(bucket_name: str):
     s3 = boto3.client('s3')
     s3.create_bucket(Bucket=bucket_name)
-    print(f'Successfully created bucket "{bucket_name}"')
+
+def main():
+    args = parse_args()
+    create_bucket(args.bucket)
 
 if __name__ == '__main__':
     main()

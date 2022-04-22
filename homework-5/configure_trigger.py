@@ -1,7 +1,11 @@
-from pprint import pprint
 import boto3
 import uuid
 from argparse import ArgumentParser
+
+def main():
+    args = parse_args()
+    grant_permission(args.function, args.bucket)
+    add_trigger(args.function, args.bucket)
 
 def parse_args():
     parser = ArgumentParser()
@@ -10,30 +14,27 @@ def parse_args():
     args = parser.parse_args()
     return args
 
-def generate_statement_id():
-    return uuid.uuid4().hex
-
-def main():
-    args = parse_args()
-
+def grant_permission(lambda_name, bucket_name):
     lambda_client = boto3.client('lambda')
-    add_permission_response = lambda_client.add_permission(
-        FunctionName=args.function,
+    lambda_client.add_permission(
+        FunctionName=lambda_name,
         StatementId=generate_statement_id(),
         Action='lambda:InvokeFunction',
         Principal='s3.amazonaws.com',
-        SourceArn=f'arn:aws:s3:::{args.bucket}'
+        SourceArn=f'arn:aws:s3:::{bucket_name}'
     )
-    print(f'Granted bucket "{args.bucket}" the permission to invoke lambda function')
-    pprint(add_permission_response)
 
+def generate_statement_id():
+    return uuid.uuid4().hex
+
+def add_trigger(lambda_arn, bucket_name):
     s3 = boto3.client('s3')
     s3.put_bucket_notification_configuration(
-        Bucket=args.bucket,
+        Bucket=bucket_name,
         NotificationConfiguration={
             'LambdaFunctionConfigurations': [
                 {
-                    'LambdaFunctionArn': args.function,
+                    'LambdaFunctionArn': lambda_arn,
                     'Events': ['s3:ObjectCreated:*'],
                     'Filter': {
                         'Key': {
@@ -49,7 +50,6 @@ def main():
             ],
         }
     )
-    print('Successfully configured trigger')
 
 if __name__ == '__main__':
     main()
