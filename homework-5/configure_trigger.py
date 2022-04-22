@@ -10,25 +10,6 @@ def parse_args():
     args = parser.parse_args()
     return args
 
-
-{
-  "Sid": "AllowToBeInvoked",
-  "Effect": "Allow",
-  "Principal": {
-    "Service": "s3.amazonaws.com"
-  },
-  "Action": "lambda:InvokeFunction",
-  "Resource": "arn:aws:lambda:ap-northeast-1:123456789101:function:TestFunc:dev",
-  "Condition": {
-    "StringEquals": {
-      "AWS:SourceAccount": "123456789101"
-    },
-    "ArnLike": {
-      "AWS:SourceArn": "arn:aws:s3:::MyAwesomeBucket"
-    }
-  }
-}
-
 def generate_statement_id():
     return uuid.uuid4().hex
 
