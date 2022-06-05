@@ -14,7 +14,7 @@ def parse_args():
     parser.add_argument('-n', '--username', type=str, required=True)
     return parser.parse_args()
 
-def generate_random_password(length=12):
+def generate_random_password(length):
    alphabet = string.ascii_letters + string.digits
    password = ''.join(secrets.choice(alphabet) for _ in range(length))
    return password
@@ -51,7 +51,7 @@ def main():
     args = parse_args()
     iam_client = boto3.client('iam')
 
-    password = generate_random_password(15)
+    password = generate_random_password(PASSWORD_LENGTH)
     create_user(iam_client, args.username, password)
     print('Created user...')
 
