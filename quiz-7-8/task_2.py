@@ -43,7 +43,7 @@ def write_credentials_to_file(username, password, filename):
     credentials = {
         'username': username,
         'password': password,
-    };
+    }
     with open(FILENAME, 'w') as output_file:
         json.dump(credentials, output_file)
 
